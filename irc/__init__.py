@@ -26,17 +26,23 @@ class rbot(SingleServerIRCBot):
         self.callback     = cb
         self.starttime    = time.strftime('%H:%M on %A, %d %B', time.gmtime(time.time()) )
 
-        self.nickname   = config.nickname
-        self.password   = config.password
-        self.chanlist   = config.channels
-        self.server     = config.server
-        self.port       = config.port
-        self.trigger    = config.trigger
-        self.realname   = self.nickname
+        self.nickname = config.nickname
+        self.password = config.password
+        self.chanlist = config.channels
+        self.server   = config.server
+        self.realname = self.nickname
+        self.port     = 6667
+        self.trigger  = '!'
+
+        if config.port is not None:
+            self.port = config.port
+
+        if config.trigger is not None:
+            self.trigger = config.trigger
 
         if self.nickname is not None:
             self.nicklength = len(self.nickname)
-            SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.nickname, self.realname, ssl=True)
+            SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.nickname, self.realname)
         else:
             raise Exception('nickname not defined, rbot init has stopped')
 
@@ -49,7 +55,7 @@ class rbot(SingleServerIRCBot):
         self.ircobj.disconnect_all()
 
     def process(self):
-        self.ircobj.process_once()
+        self.ircobj.process_once(0.1)
 
     def tell(self, target, message):
         self.connection.privmsg(target, message)
@@ -66,7 +72,7 @@ class rbot(SingleServerIRCBot):
             event.arguments().pop(0)
             self.on_action(serverconnection, event)
         elif event.arguments()[0] == 'VERSION':
-            serverconnection.ctcp_reply(nm_to_n(event.source()), config.version)
+            serverconnection.ctcp_reply(nm_to_n(event.source()), self.config.version)
         elif event.arguments()[0] == 'PING':
             if len(event.arguments()) > 1:
                 serverconnection.ctcp_reply(nm_to_n(event.source()), 'PING ' + event.arguments()[1])

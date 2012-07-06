@@ -83,13 +83,13 @@ class Config(dict):
 
         if os.path.isfile(filename):
             try:
-                d = json.loads(' '.join(open(filename, 'r').readlines()))
+                d = json.load(open(filename, 'r'))
                 for key in d:
                     self[key] = d[key]
 
                 self.configFile = filename
             except:
-                log.warning('Error during loading of the configuration file [%s]' % filename, exc_info=True)
+                log.error('Error during loading of the configuration file [%s]' % filename, exc_info=True)
 
     def __getattr__(self, attributeName):
         if attributeName in self:

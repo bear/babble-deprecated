@@ -19,6 +19,7 @@ ircFilters  = []
 
 
 def loadModules(config, qIRC):
+    log.info('looking for modules to load')
     filenames = []
 
     for filename in os.listdir(config.modules):

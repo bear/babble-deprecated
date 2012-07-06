@@ -22,13 +22,15 @@ __contributors__ = []
 
 
 import os, sys
-import irc
-import tools
+import time
 
 from modules import loadModules, checkModuleCommand, filterModule, registerCommand, registerFilter
 
 from multiprocessing import Queue, get_logger
 from Queue import Empty
+
+import irc
+import tools
 
 
 log      = get_logger()
@@ -62,6 +64,8 @@ _defaults = { 'logpath':    '.',
             }
 
 def main(config=None):
+    log.info('Starting')
+
     if config is None:
         config = tools.Config(_defaults)
 
@@ -78,28 +82,29 @@ def main(config=None):
 
     tools.initLogs(config)
 
-    log.info('Starting')
-
     loadModules(config, ircQueue)
 
     ircBot = irc.rbot(config, cb=processMessage)
     ircBot.start()
+
+    log.info('starting IRC')
 
     while ircBot.active:
         ircBot.process()
 
         try:
             msg = ircQueue.get(False)
-        except Empty:
-            msg = None
 
-        if msg is not None:
-            if msg[0] == 'irc':
-                ircBot.tell(msg[1], msg[2])
-            elif msg[0] == 'command':
-                registerCommand(msg[2], msg[1])
-            elif msg[0] == 'filter':
-                registerFilter(msg[1])
+            if msg is not None:
+                if msg[0] == 'irc':
+                    ircBot.tell(msg[1], msg[2])
+                elif msg[0] == 'command':
+                    registerCommand(msg[2], msg[1])
+                elif msg[0] == 'filter':
+                    registerFilter(msg[1])
+        except Empty:
+            time.sleep(0.1)
+
 
 if __name__ == "__main__":
     main()
