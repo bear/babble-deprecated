@@ -5,7 +5,12 @@
 """
 
 
-def echo(msg, sender, channel, private, irc):
-    irc.put(('irc', channel, 'echo [%s]' % msg))
+def echo(irc, msg, sender, channel, private):
+    irc.tell(channel, 'echo [%s]' % msg)
 
-echo.commands = ['echo', "foo"]
+echo.commands = ['echo',]
+
+def foo(irc, msg, sender, channel, private):
+    irc.tell(channel, 'bar')
+
+foo.commands = ['foo',]

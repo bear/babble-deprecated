@@ -22,19 +22,15 @@ __contributors__ = []
 
 
 import os, sys
-import time
+import logging
 
-from modules import loadModules, checkModuleCommand, filterModule, registerCommand, registerFilter
-
-from multiprocessing import Queue, get_logger
-from Queue import Empty
+from modules import loadModules, checkModuleCommand, filterModule
 
 import irc
 import tools
 
 
-log      = get_logger()
-ircQueue = Queue()
+log = logging.getLogger('babble')
 
 
 def processMessage(msg, sender, channel, private, irc):
@@ -53,9 +49,9 @@ def processMessage(msg, sender, channel, private, irc):
             body = ' '.join(args[2:])
 
     if cmd is not None:
-        checkModuleCommand(cmd, body, sender, channel, private)
+        checkModuleCommand(irc, cmd, body, sender, channel, private)
     else:
-        filterModule(body, channel, sender, msg)
+        filterModule(irc, body, channel, sender, msg)
 
 _defaults = { 'logpath':    '.',
               'modules':    './modules',
@@ -64,8 +60,6 @@ _defaults = { 'logpath':    '.',
             }
 
 def main(config=None):
-    log.info('Starting')
-
     if config is None:
         config = tools.Config(_defaults)
 
@@ -82,7 +76,9 @@ def main(config=None):
 
     tools.initLogs(config)
 
-    loadModules(config, ircQueue)
+    log.info('Starting')
+
+    loadModules(config)
 
     ircBot = irc.rbot(config, cb=processMessage)
     ircBot.start()
@@ -92,18 +88,6 @@ def main(config=None):
     while ircBot.active:
         ircBot.process()
 
-        try:
-            msg = ircQueue.get(False)
-
-            if msg is not None:
-                if msg[0] == 'irc':
-                    ircBot.tell(msg[1], msg[2])
-                elif msg[0] == 'command':
-                    registerCommand(msg[2], msg[1])
-                elif msg[0] == 'filter':
-                    registerFilter(msg[1])
-        except Empty:
-            time.sleep(0.1)
 
 
 if __name__ == "__main__":

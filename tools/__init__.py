@@ -10,10 +10,9 @@ import json
 import logging
 
 from logging.handlers import RotatingFileHandler
-from multiprocessing import get_logger
 
 
-log = get_logger()
+log = logging.getLogger('babble')
 
 
 def relativeDelta(td):

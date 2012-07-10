@@ -6,14 +6,13 @@
 """
 
 import time
-
-from multiprocessing import get_logger
+import logging
 
 from ircbot import SingleServerIRCBot
 from irclib import nm_to_n
 
 
-log = get_logger()
+log = logging.getLogger('babble')
 
 
 
