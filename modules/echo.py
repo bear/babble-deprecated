@@ -21,6 +21,6 @@ def test(irc, msg, sender, channel, private):
 test.filters = True
 
 def poll(irc):
-    print 'polled'
+    pass
 
 poll.timer = True

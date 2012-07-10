@@ -99,7 +99,7 @@ class Config(dict):
 def initLogs(config):
     if config.logpath is not None:
         fileHandler   = RotatingFileHandler(os.path.join(config.logpath, '%s.log' % config.ourName), maxBytes=1000000, backupCount=99)
-        fileFormatter = logging.Formatter('%(asctime)s %(levelname)-7s %(processName)s: %(message)s')
+        fileFormatter = logging.Formatter('%(asctime)s %(levelname)-7s %(message)s')
 
         fileHandler.setFormatter(fileFormatter)
 
@@ -108,7 +108,7 @@ def initLogs(config):
 
     if not config.background:
         echoHandler   = logging.StreamHandler()
-        echoFormatter = logging.Formatter('%(levelname)-7s %(processName)s: %(message)s')
+        echoFormatter = logging.Formatter('%(levelname)-7s %(message)s')
 
         echoHandler.setFormatter(echoFormatter)
 
