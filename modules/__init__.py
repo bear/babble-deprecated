@@ -14,6 +14,7 @@ log         = logging.getLogger('babble')
 ircModules  = {}
 ircCommands = {}
 ircFilters  = []
+ircPollers  = []
 
 
 def loadModules(config):
@@ -49,10 +50,11 @@ def loadModules(config):
                         log.info('registering command %s' % cmd)
                         ircCommands[cmd] = (obj, filename)
                 if hasattr(obj, 'filters'):
-                    for cmd in obj.filters:
-                        log.info('registering filter %s' % cmd)
-                        ircFilters.append((obj, filename))
-
+                    log.info('registering filter %s' % cmd)
+                    ircFilters.append((obj, filename))
+                if hasattr(obj, 'timer'):
+                    log.info('registering timer')
+                    ircPollers.append((obj, filename))
         except:
             module = None
             log.error('Unable to load module %s' % filename, exc_info=True)
@@ -68,3 +70,7 @@ def filterModule(irc, body, sender, channel, private):
     for obj, mod in ircFilters:
         log.info('send msg to module %s for filter' % mod)
         obj(irc, body, sender, channel, private)
+
+def pollModules(irc):
+    for obj, mod in ircPollers:
+        obj(irc)

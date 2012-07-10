@@ -22,9 +22,10 @@ __contributors__ = []
 
 
 import os, sys
+import time
 import logging
 
-from modules import loadModules, checkModuleCommand, filterModule
+from modules import loadModules, checkModuleCommand, filterModule, pollModules
 
 import irc
 import tools
@@ -85,9 +86,16 @@ def main(config=None):
 
     log.info('starting IRC')
 
+    lastPoll = time.time()
+
     while ircBot.active:
         ircBot.process()
 
+        # loop thru the modules that have registered
+        # a poll handler every 60 seconds
+        if time.time() - lastPoll > 60:
+            pollModules(ircBot)
+            lastPoll = time.time()
 
 
 if __name__ == "__main__":
