@@ -67,7 +67,8 @@ def main():
 
     atexit.register(shutdown)
 
-    daemonize(config)
+    if config.daemon:
+        daemonize(config)
 
     #loadModules(config)
 

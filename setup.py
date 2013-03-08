@@ -11,6 +11,8 @@ setup(name='babble',
       license=__license__,
       description=__doc__,
       long_description=open('README.md').read(),
+      entry_points={ 'console_scripts': [ 'babble = babble:main', ]
+      },
       classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
