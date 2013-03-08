@@ -22,22 +22,31 @@ class rbot(SingleServerIRCBot):
         self.active       = False
         self.joined       = False
         self.registerNick = False
+        self.nickname     = config.nickname
+        self.password     = config.password
+        self.server       = config.server
+        self.port         = 6667
+        self.trigger      = '!'
         self.callback     = cb
         self.starttime    = time.strftime('%H:%M on %A, %d %B', time.gmtime(time.time()) )
 
-        self.nickname = config.nickname
-        self.password = config.password
-        self.chanlist = config.channels
-        self.server   = config.server
-        self.realname = self.nickname
-        self.port     = 6667
-        self.trigger  = '!'
+        if self.server is None:
+            raise Exception('server name is a required configuration item')
+        if self.nickname is None:
+            raise Exception('nickname is a required configuration item')
 
-        if config.port is not None:
+        if config.password is not None:
+            self.password     = config.password
+            self.registerNick = len(self.password) > 0
+
+        if hasattr(config, 'port'):
             self.port = config.port
 
-        if config.trigger is not None:
+        if hasattr(config, 'trigger'):
             self.trigger = config.trigger
+
+        self.chanlist = config.channels.split(',')
+        self.realname = self.nickname
 
         if self.nickname is not None:
             self.nicklength = len(self.nickname)

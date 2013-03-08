@@ -1,4 +1,5 @@
 *.cfg
+*.pid
 *.log
 *.py[co]
 

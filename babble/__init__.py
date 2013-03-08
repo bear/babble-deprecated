@@ -13,7 +13,7 @@ Requires:
 VERSION = (0, 1, 0, "alpha")
 
 __author__       = 'Mike Taylor'
-__contact__      = 'bear@code-bear.com'
+__contact__      = 'bear@bear.im'
 __copyright__    = 'Copyright 2012, Mike Taylor'
 __license__      = 'BSD'
 __site__         = 'https://github.com/bear/babble'
@@ -23,12 +23,13 @@ __contributors__ = []
 
 import os, sys
 import time
+import atexit
 import logging
 
 from modules import loadModules, checkModuleCommand, filterModule, pollModules
 
 import irc
-import tools
+from bearlib import bConfig, bLogs, daemonize
 
 
 log = logging.getLogger('babble')
@@ -54,49 +55,35 @@ def processMessage(msg, sender, channel, private, irc):
     else:
         filterModule(irc, body, channel, sender, msg)
 
-_defaults = { 'logpath':    '.',
-              'modules':    './modules',
-              'debug':      False,
-              'background': False,
-            }
+def shutdown():
+    logging.shutdown()
 
-def main(config=None):
-    if config is None:
-        config = tools.Config(_defaults)
+def main():
+    config = bConfig()
+    config.parseCommandLine()
+    config.loadConfigFile()
 
-        config.appPath = os.getcwd()
-        config.ourName = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+    bLogs(config)
 
-        if len(sys.argv) > 1 and os.path.isfile(sys.argv[1]):
-            configFile = sys.argv[1]
-        else:
-            configFile = os.path.join(config.appPath, '%s.cfg' % config.ourName)
+    atexit.register(shutdown)
 
-        if os.path.isfile(configFile):
-            config.load(configFile)
+    daemonize(config)
 
-    tools.initLogs(config)
+    #loadModules(config)
 
-    log.info('Starting')
+    if hasattr(config, 'irc'):
+        ircBot = irc.rbot(config.irc, cb=processMessage)
+        ircBot.start()
 
-    loadModules(config)
+        log.info('starting IRC')
 
-    ircBot = irc.rbot(config, cb=processMessage)
-    ircBot.start()
+        lastPoll = time.time()
 
-    log.info('starting IRC')
+        while ircBot.active:
+            ircBot.process()
 
-    lastPoll = time.time()
-
-    while ircBot.active:
-        ircBot.process()
-
-        # loop thru the modules that have registered
-        # a poll handler every 60 seconds
-        if time.time() - lastPoll > 60:
-            pollModules(ircBot)
-            lastPoll = time.time()
-
-
-if __name__ == "__main__":
-    main()
+            # loop thru the modules that have registered
+            # a poll handler every 60 seconds
+            if time.time() - lastPoll > 60:
+                pollModules(ircBot)
+                lastPoll = time.time()
