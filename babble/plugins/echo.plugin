@@ -1,0 +1,7 @@
+[Core]
+Name = Echo
+Module = echo
+
+[Documentation]
+Description = echo things (what else would it do?)
+Version = 0.1

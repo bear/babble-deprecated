@@ -5,34 +5,38 @@
 :license: BSD, see LICENSE for more details.
 """
 
-import os
-import imp
-import logging
+# import os
+# import imp
+# import logging
 
-from yapsy.VersionedPluginManager import VersionedPluginManager
-from yapsy.PluginManager import PluginManagerSingleton
+# from yapsy.VersionedPluginManager import VersionedPluginManager
+# from yapsy.PluginManager import PluginManagerSingleton
 
-log         = logging.getLogger('babble')
-ircModules  = {}
-ircCommands = {}
-ircFilters  = []
-ircPollers  = []
+# log         = logging.getLogger('babble')
+# ircModules  = {}
+# ircCommands = {}
+# ircFilters  = []
+# ircPollers  = []
 
 
-PluginManagerSingleton.setBehaviour([
-    VersionedPluginManager,
-])
+# PluginManagerSingleton.setBehaviour([
+#     VersionedPluginManager,
+# ])
 
-manager = PluginManagerSingleton.get()
+# manager = PluginManagerSingleton.get()
 
-def loadModules(config):
-    log.info('loading modules')
+# def loadModules(config):
+#     log.info('loading modules')
 
-    manager.setPluginInfoExtension("plugin")
-    manager.setPluginPlaces(config['modules'])
+#     manager.setPluginInfoExtension("plugin")
+#     manager.setPluginPlaces(config.modules.path)
 
-    manager.collectPlugins()
+#     manager.collectPlugins()
 
+#     for item in manager.getAllPlugins():
+#         print info.name
+#         print info.plugin_object
+#         print info
 
     # for filename in filenames:
     #     log.info('loading module %s' % filename)

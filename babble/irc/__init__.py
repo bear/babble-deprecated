@@ -50,23 +50,26 @@ class rbot(SingleServerIRCBot):
 
         if self.nickname is not None:
             self.nicklength = len(self.nickname)
-            SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.nickname, self.realname)
+            print 'ircbot started'
+            # SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.nickname, self.realname)
         else:
             raise Exception('nickname not defined, rbot init has stopped')
 
     def start(self):
-        self._connect()
+        # self._connect()
         self.active = True
 
     def stop(self):
         self.active = False
-        self.ircobj.disconnect_all()
+        # self.ircobj.disconnect_all()
 
     def process(self):
-        self.ircobj.process_once(0.1)
+        print '.'
+        # self.ircobj.process_once(0.1)
 
     def tell(self, target, message):
-        self.connection.privmsg(target, message)
+        print 'irc:', target, message
+        # self.connection.privmsg(target, message)
 
     def do_join(self, event, cmd, data):
         SingleServerIRCBot._on_join(self, self.connection, event)
